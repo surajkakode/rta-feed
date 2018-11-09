@@ -1,0 +1,77 @@
+package karvy;
+
+import org.apache.log4j.Logger;
+import org.testng.Assert;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
+import testBase.TestBase;
+import uiActionKarvyMfs.Dashboard;
+import uiActionKarvyMfs.ListOfReports;
+import uiActionKarvyMfs.LoginPage;
+import uiActionKarvyMfs.TransactionReport;
+
+import java.io.IOException;
+import java.util.Properties;
+
+public class KarvyFileDownload extends TestBase {
+
+    public static final Logger log = Logger.getLogger(KarvyFileDownload.class.getName());
+
+    @BeforeTest
+    public void setup() {
+        init();
+    }
+
+    LoginPage loginPage;
+    Dashboard dashboard;
+    ListOfReports listOfReports;
+    TransactionReport transactionReport;
+
+    public String email= "FINCASH";
+    public String pass="Fincash@01";
+    public String filePass="Fincash@01";
+
+    public void loadUserProperty() throws IOException {
+        java.io.InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("my.properties");
+        java.util.Properties properties = new Properties();
+        properties.load(inputStream);
+        this.email = properties.getProperty("karvy.email");
+        this.pass = properties.getProperty("karvy.pass");
+        this.filePass = properties.getProperty("karvy.filePass");
+    }
+
+    @Test
+    public void downloadKarvyFile() {
+        driver.get("https://www.karvymfs.com/karvy/Distributor/Distributor_Login.aspx");
+
+        try {
+            loadUserProperty();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        loginPage = new LoginPage(driver);
+        loginPage.loginToKarvy(this.email,this.pass);
+
+        dashboard = new Dashboard(driver);
+        dashboard.mailBackReports.click();
+
+        listOfReports= new ListOfReports(driver);
+        listOfReports.MFSD201TransactionReport.click();
+
+        transactionReport = new TransactionReport(driver);
+        transactionReport.fillForm(this.filePass);
+
+        log.info("The transaction Report Reference No is : "+ transactionReport.tranReferenceNumber);
+
+        Assert.assertTrue(transactionReport.isRequestSubmitted());
+    }
+
+    @AfterTest
+    public void close()
+    {
+        driver.close();
+    }
+
+}

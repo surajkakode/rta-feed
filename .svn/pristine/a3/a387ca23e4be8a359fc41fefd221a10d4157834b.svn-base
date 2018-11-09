@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+
+
+<suite name="Morning Suite"  preserve-order="true" parallel="false" thread-count="1" verbose="10">
+
+    <listeners>
+        <listener class-name="customListener.Listener"></listener>
+        <listener class-name="customListener.RetryListener"></listener>
+        <!--     <listener class-name="com.fincash.customListener.WebEventListener"></listener>  -->
+    </listeners>
+
+    <test name="kamsFileDownloadTest">
+        <classes>
+            <class name="cams.CamsFileDownload"></class>
+        </classes>
+    </test>
+
+    <test name="karvyFileDownloadTest">
+        <classes>
+            <class name="karvy.KarvyFileDownload"></class>
+        </classes>
+    </test>
+
+    <test name="bnpParibasFileDownloadTest">
+        <classes>
+            <class name="bnpSundaram.BNPPribasFileDownload"></class>
+        </classes>
+    </test>
+
+    <test name="sundaramFileDownloadTest">
+        <classes>
+            <class name="bnpSundaram.SundaramFileDownload"></class>
+        </classes>
+    </test>
+
+    <test name="ftiFileDownloadTest">
+        <classes>
+            <class name="franklinTempletonIndia.ftiFileDownload"></class>
+        </classes>
+    </test>
+
+</suite>

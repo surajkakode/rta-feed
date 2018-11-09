@@ -1,0 +1,79 @@
+package uiActionCamsOnline;
+
+import org.apache.log4j.Logger;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+public class ReportSelection {
+
+    public static final Logger log = Logger.getLogger(ReportSelection.class.getName());
+    WebDriver driver;
+
+
+    public ReportSelection(WebDriver driver)
+    {
+        this.driver= driver;
+//        AjaxElementLocatorFactory factory = new AjaxElementLocatorFactory(driver,100);
+        PageFactory.initElements(driver,this);
+    }
+
+    @FindBy(xpath = "//table/tbody/tr[1]/td[3]/a[@id='lbii']")
+    public WebElement customerService;
+
+    @FindBy(xpath = "//td[contains(text(),'Investor Transactions for a Period')]//input[@type='radio' and @value='WBR2']")
+    public WebElement WBR2;
+
+    @FindBy(xpath = "//td[contains(text(),'Account Statement of my Investor(s)')]//input[@type='radio' and @value='WBR7']")
+    public WebElement WBR7;
+
+    @FindBy(id = "ddlformat")
+    public WebElement desiredOutputFormat;
+
+    @FindBy(id = "ddldeliopt")
+    public WebElement deliveryOption;
+
+    @FindBy(id = "btnnext")
+    public WebElement nextButton;
+
+    public void setWBR2Report()
+    {
+        new WebDriverWait(driver,10).until(ExpectedConditions.elementToBeClickable(this.customerService)).click();
+
+        //new WebDriverWait(driver,10).until(ExpectedConditions.visibilityOf(WBR2));
+        new WebDriverWait(driver,10).until(ExpectedConditions.elementToBeClickable(WBR2)).click();
+//        WBR2A.click();
+
+        Select select = new Select(desiredOutputFormat);
+        select.selectByValue("XLSWH");
+
+        Select select1 = new Select(deliveryOption);
+        select1.selectByValue("SENDATTACH");
+
+        new WebDriverWait(driver,10).until(ExpectedConditions.elementToBeClickable(this.nextButton));
+        this.nextButton.click();
+    }
+
+    public void setWBR7Report()
+    {
+        new WebDriverWait(driver,10).until(ExpectedConditions.elementToBeClickable(this.customerService)).click();
+
+        //new WebDriverWait(driver,10).until(ExpectedConditions.visibilityOf(WBR7));
+        new WebDriverWait(driver,10).until(ExpectedConditions.elementToBeClickable(WBR7));
+        WBR7.click();
+
+        Select select = new Select(desiredOutputFormat);
+        select.selectByValue("XLSWH");
+
+        Select select1 = new Select(deliveryOption);
+        select1.selectByValue("SENDATTACH");
+
+        new WebDriverWait(driver,10).until(ExpectedConditions.elementToBeClickable(this.nextButton));
+        this.nextButton.click();
+    }
+
+}
