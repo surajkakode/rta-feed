@@ -6,6 +6,7 @@ uiActionCamsOnline\DistributorMailbackService.class
 customListener\RetryListener.class
 uiActionKarvyMfs\ListOfReports.class
 uiActionCamsOnline\DistributorMailbackServiceDisclaimer.class
+uiActionFTI\MyInvestors.class
 customListener\WebEventListener.class
 uiActionFTI\LoginPage.class
 uiActionFTI\Dashboard.class
