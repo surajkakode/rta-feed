@@ -2,6 +2,7 @@ package franklinTempletonIndia;
 
 import org.apache.log4j.Logger;
 import org.testng.Assert;
+import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 import testBase.TestBase;
@@ -54,26 +55,32 @@ public class FtiFileDownload extends TestBase{
          loginPage = new LoginPage(driver);
          loginPage.login(this.email,this.pass);
 
-         dashboard= new Dashboard(driver);
-         //dashboard.clickOnMyAccount();
+        try {
+            dashboard= new Dashboard(driver);
+            //dashboard.clickOnMyAccount();
 
-         myAccount = new MyAccount(driver);
-         myAccount.clickOnInstantReport();
+            myAccount = new MyAccount(driver);
+            myAccount.clickOnInstantReport();
 
-        InstantReports instantReports = new InstantReports(driver);
-        instantReports.setEmailID(this.distributerEmail);
+            InstantReports instantReports = new InstantReports(driver);
+            instantReports.setEmailID(this.distributerEmail);
 
-        instantReports.getInstatReport();
+            instantReports.getInstatReport();
+            instantReports.selectFromDate();
 
-        Assert.assertTrue(instantReports.isSuccessful());
+            Assert.assertTrue(instantReports.isSuccessful());
 
-        dashboard.logout();
-
-
-
-
-
+            dashboard.logout();
+        } catch (Exception e) {
+            log.error(e,e);
+            dashboard.logout();
+        }
 
     }
 
+    @AfterTest
+    public void closeBrowser()
+    {
+        //driver.close();
+    }
 }

@@ -2,11 +2,15 @@ package uiActionFTI;
 
 
 import org.apache.log4j.Logger;
+import org.openqa.selenium.ElementNotInteractableException;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class LoginPage {
 
@@ -19,8 +23,8 @@ public class LoginPage {
         PageFactory.initElements(driver,this);
     }
 
-    @FindBy(css = "div[class^='dropdown fti-login']")
-    private WebElement loginDropDownButton;
+    @FindBy(xpath = "//*[contains(@class,'fti-loginBtn') and contains(@class,'dropdown') and @type='button']")
+    private ArrayList <WebElement> loginDropDownButton;
 
     @FindBy(xpath = "//div[contains(@class,'desktop')]//input[@name='loginName']")
     private WebElement loginId;
@@ -31,11 +35,21 @@ public class LoginPage {
     @FindBy(xpath = "//div[contains(@class,'desktop')]//button[contains(text(),'Login')]")
     private WebElement submitButton;
 
-
+    public void clickOnLoginButton()
+    {
+            for (int i=0;i<loginDropDownButton.size();i++)
+            {
+                try {
+                    loginDropDownButton.get(i).click();
+                } catch (ElementNotInteractableException e) {
+                    log.info(e);
+                }
+            }
+    }
 
     public void login(String email, String password)
     {
-        loginDropDownButton.click();
+        clickOnLoginButton();
 
 //        this.loginId.clear();
         this.loginId.sendKeys(email);

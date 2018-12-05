@@ -1,0 +1,82 @@
+package cams;
+
+import org.testng.Assert;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
+import testBase.TestBase;
+import uiActionCamsOnline.*;
+
+import java.io.IOException;
+import java.util.Properties;
+import java.util.logging.Logger;
+
+public class CamsFileDownload extends TestBase {
+
+    public static final Logger log = Logger.getLogger(CamsFileDownload.class.getName());
+
+
+    @BeforeTest
+    public void setup()
+    {
+        init();
+    }
+
+    DistributorMailbackServiceDisclaimer distributorMailbackServiceDisclaimer;
+    DistributorMailbackService distributorMailbackService;
+    ReportSelection reportSelection;
+    QueryParameters queryParameters;
+    QueryConfirmation queryConfirmation;
+    ConfirmationOfRequest confirmationOfRequest;
+
+    public String email="operations@fincash.com";
+    public String pass="fincash01";
+
+    public void loadUserProperty() throws IOException {
+        java.io.InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("my.properties");
+        java.util.Properties properties = new Properties();
+        properties.load(inputStream);
+         this.email = properties.getProperty("cams.email");
+         this.pass = properties.getProperty("cams.filePass");
+    }
+
+    @Test
+    public void downloadKamsFile()
+    {
+        driver.get("http://www.camsonline.com/DistributorServices/COL_Mailbackservice.aspx");
+
+        try {
+            loadUserProperty();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        distributorMailbackServiceDisclaimer = new DistributorMailbackServiceDisclaimer(driver);
+        distributorMailbackServiceDisclaimer.acceptDisclaimer();
+
+        distributorMailbackService=new DistributorMailbackService(driver);
+        distributorMailbackService.distributorMailbackService(this.email);
+
+        reportSelection = new ReportSelection(driver);
+        reportSelection.setWBR2Report();
+        reportSelection.selectXcelWithHeader();
+        reportSelection.selectEmailEncryptAttachment();
+        reportSelection.clickOnNextButton();
+
+        queryParameters = new QueryParameters(driver);
+        queryParameters.setFromDate();
+
+        queryConfirmation = new QueryConfirmation(driver);
+        queryConfirmation.setPassword(this.pass,this.pass);
+
+        confirmationOfRequest = new ConfirmationOfRequest(driver);
+        Assert.assertTrue(confirmationOfRequest.isRequestSubmitted());
+
+    }
+
+    @AfterTest
+    public void closeBrowser()
+    {
+        //driver.close();
+    }
+}

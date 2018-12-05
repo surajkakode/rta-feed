@@ -6,6 +6,7 @@ uiActionCamsOnline\DistributorMailbackService.class
 customListener\RetryListener.class
 uiActionKarvyMfs\ListOfReports.class
 uiActionCamsOnline\DistributorMailbackServiceDisclaimer.class
+utility\Utility.class
 uiActionFTI\MyInvestors.class
 customListener\WebEventListener.class
 uiActionFTI\LoginPage.class
@@ -15,6 +16,8 @@ uiActionFTI\MyAccount.class
 uiActionCamsOnline\QueryConfirmation.class
 uiActionKarvyMfs\Dashboard.class
 uiActionKarvyMfs\InvestorQuery.class
+uiActionFTI\DatepickerTry.class
+uiActionFTI\DatePicker.class
 uiActionBNPSundaram\InvestorSOA.class
 uiActionCamsOnline\QueryParameters.class
 customListener\Retry.class
@@ -23,4 +26,5 @@ uiActionKarvyMfs\LoginPage.class
 testBase\TestBase.class
 customListener\Listener.class
 uiActionKarvyMfs\TransactionReport.class
+uiActionConsolidatedAccountStatement\ConsolidatedAccountStatement.class
 uiActionCamsOnline\ReportSelection.class

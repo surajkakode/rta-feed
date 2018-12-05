@@ -1,0 +1,196 @@
+package uiActionConsolidatedAccountStatement;
+
+import org.apache.log4j.Logger;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+public class ConsolidatedAccountStatement {
+
+    public static final Logger log = Logger.getLogger(ConsolidatedAccountStatement.class.getName());
+
+    WebDriver driver;
+
+    public ConsolidatedAccountStatement(WebDriver driver)
+    {
+        this.driver= driver;
+        PageFactory.initElements(driver,this);
+    }
+
+    private String SUMMARY="summary";
+    private String DETAILED = "detailed";
+    private String CURRENTFINANCIALYEAR="currentFinancialYear";
+    private String PREVIOUSFINANCIALYEAR = "previousFinancialYear";
+    private String SPECIFIEDPERIOD = "specificPeriod";
+
+
+    @FindBy(xpath = "//input[@id='rdSummary' and @type='radio']")
+    private WebElement summaryView;                                                //Summary (Only balances and valuation)
+
+    @FindBy(xpath = "//input[@id='rdDetailed' and @type='radio']")
+    private WebElement detailedView;                                                //Includes transaction listing
+
+    @FindBy(xpath = "//input[@id='radCurrentFin' and @type='radio']")
+    private WebElement currentFinancialYear;
+
+    @FindBy(xpath = "//input[@id='radLastFin' and @type='radio']")
+    private WebElement previousFinancialYear;
+
+    @FindBy(xpath = "//input[@id='radAnyDate' and @type='radio']")
+    private WebElement specificPeriod;
+
+    ////////
+
+    @FindBy(xpath = "//input[@id='txtFromDt' and @type='text']")
+    private WebElement fromDate;
+
+    @FindBy(xpath = "//input[@id='txtToDt' and @type='text']")
+    private WebElement toDate;
+
+    @FindBy(xpath = "//input[@id='txtEmail' and @type='text']")
+    private WebElement email;
+
+    @FindBy(xpath = "//input[@id='txtPANNo' and @type='text']")
+    private WebElement pan;
+
+    @FindBy(xpath = "//input[@id='txtPassword' and @type='password']")
+    private WebElement password;
+
+    @FindBy(xpath = "//input[@id='txtRePassword' and @type='password']")
+    private WebElement rePassword;
+
+    @FindBy(xpath = "//input[@id='txtCaptcha' and @type='text']")
+    private WebElement captcha;
+
+    @FindBy(xpath = "//input[@id='btnGenerate' and @type='submit']")
+    private WebElement submitButton;
+
+    @FindBy(xpath = "//input[@id='bntReset' and @type='Reset']")
+    private WebElement resetButton;
+
+    @FindBy(xpath = "//input[@name='hdnCaptcha' or @id='hdnCaptcha']")
+    private WebElement hiddenCapcha;
+
+    private void waitForElementtoBeClickble(WebElement element)
+    {
+        new WebDriverWait(driver,10).until(ExpectedConditions.elementToBeClickable(element));
+    }
+
+    public void selectStatementType(String statementType)
+    {
+
+        waitForElementtoBeClickble(this.summaryView);
+        if(statementType.equalsIgnoreCase(this.DETAILED) || statementType.contains(this.DETAILED) )
+        {
+            this.detailedView.click();
+            waitForElementtoBeClickble(this.currentFinancialYear);
+            this.currentFinancialYear.click();
+        }
+        else if(statementType.equalsIgnoreCase(this.SUMMARY) || statementType.contains(this.SUMMARY) ) {
+            this.summaryView.click();
+        }
+        else if (statementType.equalsIgnoreCase(this.CURRENTFINANCIALYEAR) || statementType.contains(this.CURRENTFINANCIALYEAR))
+        {
+            this.detailedView.click();
+            waitForElementtoBeClickble(this.currentFinancialYear);
+            this.currentFinancialYear.click();
+        }
+        else if (statementType.equalsIgnoreCase(this.PREVIOUSFINANCIALYEAR) || statementType.contains(this.PREVIOUSFINANCIALYEAR))
+        {
+            this.detailedView.click();
+            waitForElementtoBeClickble(this.previousFinancialYear);
+            this.previousFinancialYear.click();
+        }
+        else if (statementType.equalsIgnoreCase(this.SPECIFIEDPERIOD) || statementType.contains(this.SPECIFIEDPERIOD))
+        {
+            this.detailedView.click();
+            waitForElementtoBeClickble(this.specificPeriod);
+            this.specificPeriod.click();
+        }
+
+    }
+
+    public void selectSpecifiedPeriod(String fromDate,String toDate)
+    {
+        this.detailedView.click();
+        waitForElementtoBeClickble(this.specificPeriod);
+        this.specificPeriod.click();
+        this.fromDate.clear();
+        this.fromDate.sendKeys(fromDate);
+
+        this.toDate.clear();
+        this.toDate.sendKeys(toDate);
+    }
+
+    public void requestToConsolidatedStatement(String email,String pan,String pass)
+    {
+        // Password should be at least 6 characters long and it should contain atleast 2 numbers.
+
+        this.email.clear();
+        this.email.sendKeys(email);
+
+        this.pan.clear();
+        this.pan.sendKeys(pan);
+
+        this.password.clear();
+        this.password.sendKeys(pass);
+
+        this.rePassword.clear();
+        this.rePassword.sendKeys(pass);
+
+        this.captcha.clear();
+        this.captcha.sendKeys(getCapcha());
+
+    }
+
+    public void requestToConsolidatedStatement(String email,String pass)
+    {
+        //Password should be at least 6 characters long and it should contain atleast 2 numbers.
+
+        this.email.clear();
+        this.email.sendKeys(email);
+
+        this.password.clear();
+        this.password.sendKeys(pass);
+
+        this.rePassword.clear();
+        this.rePassword.sendKeys(pass);
+
+        this.captcha.clear();
+        this.captcha.sendKeys(getCapcha());
+
+    }
+
+    public void submitForm()
+    {
+        this.submitButton.click();
+    }
+    public void resetForm()
+    {
+        this.resetButton.click();
+    }
+
+    private String getCapcha()
+    {
+        log.info("The Captch is: "+this.hiddenCapcha.getAttribute("value"));
+        return this.hiddenCapcha.getAttribute("value");
+
+    }
+
+    public boolean isRequestSubmitted()
+    {
+        String actualText = driver.findElement(By.xpath("//*[@id='result']")).getText().toLowerCase();
+        String expectedText = "request confirmation";
+        String expectedText1 = "thank you for visiting karvy";
+        log.info(actualText);
+        if (actualText.contains(expectedText) || actualText.contains(expectedText1))
+        {
+            return true;
+        }
+        else return false;
+    }
+}

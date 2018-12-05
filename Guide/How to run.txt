@@ -1,0 +1,121 @@
+Detailed Document 
+We have automated mainly 3 type of process:
+1.	Consolidated statement download
+2.	RTA feed download
+3.	Investor statement download
+                   
+Below are the command to execute the files.
+Understanding -DparameterName:
+-DsuiteFile = it is mandatory and compulsory to run command. Name of suite file. comma can be placed for running multiple suites. 
+For RTA feed, we have named it as rtaName.xml and for statement download its rtaNameSt.xml  
+karvyConsolidated.xml
+cams.xml
+camsSt.xml
+karvy.xml
+karvySt.xml
+sundaram.xml
+sundaramSt.xml
+bnp.xml
+bnpSt.xml
+fti.xml
+ftiSt.xml
+testng.xml
+testNGevening.xml
+
+
+-Dbrowser = to change the browser to chrome, mozilla or headlessChrome, by default we have set to headlesschrome.
+
+Global parameter for Consolidated Holding download : 
+-DkarvyStatementType=  arguments can be : summary/ current/ currentFinancialYear/ previous/ previousFinancialYear/ specific/ specificPeriod
+-DkarvyEmail= investor’s email address 
+-DkarvyPan= this field is optional 
+-DkarvyFilePass=Password should be at least 6 characters long and it should contain atleast 2 numbers
+-DkarvyFromDate=format should be "dd/mm/yyyy"   
+-DkarvyToDate=format should be "dd/mm/yyyy"
+
+Global parameter for cams: RTA feed 
+-DcamsEmail = This is ditributer's email address
+-DcamsFilePass = Password required to extract the file
+Example:
+mvn clean test -DsuiteFile=cams.xml -DcamsEmail=operations@fincash.com -DcamsFilePass=fincash01
+Global parameter for cams : statement download 
+-DcamsEmail = This is ditributer’s email address
+-DcamsFilePass = Password required to extract the file 
+-DcamsFolio= To download the Statement of investor  
+-DcamsAmc= Amc intial in lower case
+Example:
+mvn clean test -DsuiteFile=camsSt.xml -DcamsEmail=operations@fincash.com -DcamsFilePass=fincash01 -DcamsFolio=1019500312,74185296,89898956 -DcamsAmc="Aditya birla"
+Global parameter for Karvy : RTA feed   
+-DkarvyEmail, 
+-DkarvyPass, 
+-DkarvyFilePass,
+Example:
+mvn clean test -DsuiteFile=karvy.xml -DkarvyEmail=FINCASH -DkarvyPass=Fincash@01 -DkarvyFilePass=Fincash@01
+Global parameter for Karvy : statement download  
+-DkarvyEmail, 
+-DkarvyPass, 
+-DkarvyFilePass, 
+-DkarvyFolio,
+-DkarvyAmc,
+-DkarvyUserEmail
+Example:
+mvn clean test -DsuiteFile=karvySt.xml -DkarvyEmail=FINCASH -DkarvyPass=Fincash@01 -DkarvyFilePass=Fincash@01 -DkarvyFolio=499182535433 -DkarvyAmc=reliance -DkarvyUserEmail=suraj.kakode@fincash.com
+	
+Global parameter for bnp: RTA feed    
+-DbnpEmail, 
+-DbnpPass, 
+Example:
+mvn clean test -DsuiteFile=bnp.xml -DbnpEmail=ARN-112358 -DbnpPass=Fincash@111
+
+Global parameter for bnp: statement download   
+-DbnpEmail, 
+-DbnpPass, 
+-DbnpFolio
+Example:
+mvn clean test -DsuiteFile=bnpSt.xml -DbnpEmail=ARN-112358 -DbnpPass=Fincash@111 -DbnpFolio=900000578565,900000538772
+Global parameter for Sundaram : RTA feed
+-DsundEmail, 
+-DsundPass, 
+Example:
+mvn clean test -DsuiteFile=sundaram.xml -DsundEmail=ARN-112358 -DsundPass=Fincash@111
+Global parameter for Sundaram : statement download
+-DsundEmail, 
+-DsundPass, 
+-DsundFolio
+Example:
+mvn clean test -DsuiteFile=SundaramSt.xml -DsundEmail=ARN-112358 -DsundPass=Fincash@111 -DsundFolio=900000578565,900000538772
+	
+Global parameter for fti : RTA feed   
+-DftiEmail, 
+-DftiPass, 
+-DftiDEmail,
+Example:
+mvn clean test -DsuiteFile=fti.xml -DftiEmail=ARN112358 -DftiPass=Fincash@01 -DftiDEmail=operations@fincash.com
+
+Global parameter for fti : statement download    
+-DftiEmail, 
+-DftiPass, 
+-DftiDEmail,
+-DftiFolio
+Example:
+mvn clean test -DsuiteFile=ftiSt.xml -DftiEmail=ARN112358 -DftiPass=Fincash@01 -DftiFolio=21367558
+
+
+Below are the example:
+Consolidated Holding download
+    mvn clean test -Dbrowser=headlessChrome -DsuiteFile=karvyConsolidated.xml -DkarvyStatementType=summary -DkarvyEmail=surajkakode@gmail.com -DkarvyPan=cgcpk5110m -DkarvyFilePass=Fincash@01 -DkarvyFromDate=""   -DkarvyToDate=""
+
+Command For RTA feed download
+mvn clean test -DsuiteFile=cams.xml -DcamsEmail=operations@fincash.com -DcamsFilePass=fincash01
+mvn clean test -DsuiteFile=karvy.xml -DkarvyEmail=FINCASH -DkarvyPass=Fincash@01 -DkarvyFilePass=Fincash@01
+mvn clean test -DsuiteFile=bnp.xml -DbnpEmail=ARN-112358 -DbnpPass=Fincash@111
+mvn clean test -DsuiteFile=sundaram.xml -DsundEmail=ARN-112358 -DsundPass=Fincash@111
+mvn clean test -DsuiteFile=fti.xml -DftiEmail=ARN112358 -DftiPass=Fincash@01 -DftiDEmail=operations@fincash.com
+
+                                
+Command For Customer Statement download
+mvn clean test -DsuiteFile=camsSt.xml -DcamsEmail=operations@fincash.com -DcamsFilePass=fincash01 -DcamsFolio=1019500312,74185296,89898956 -DcamsAmc="Aditya birla"
+mvn clean test -DsuiteFile=karvySt.xml -DkarvyEmail=FINCASH -DkarvyPass=Fincash@01 -DkarvyFilePass=Fincash@01 -DkarvyFolio=499182535433 -DkarvyAmc=reliance -DkarvyUserEmail=suraj.kakode@fincash.com
+mvn clean test -DsuiteFile=bnpSt.xml -DbnpEmail=ARN-112358 -DbnpPass=Fincash@111 -DbnpFolio=900000578565,900000538772
+mvn clean test -DsuiteFile=SundaramSt.xml -DsundEmail=ARN-112358 -DsundPass=Fincash@111 -DsundFolio=900000578565,900000538772
+mvn clean test -DsuiteFile=ftiSt.xml -DftiEmail=ARN112358 -DftiPass=Fincash@01 -DftiFolio=21367558

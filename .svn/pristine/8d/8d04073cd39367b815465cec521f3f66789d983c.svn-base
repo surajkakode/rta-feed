@@ -1,0 +1,105 @@
+package uiActionCamsOnline;
+
+import org.apache.log4j.Logger;
+import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+public class ReportSelection {
+
+    public static final Logger log = Logger.getLogger(ReportSelection.class.getName());
+    WebDriver driver;
+
+
+    public ReportSelection(WebDriver driver)
+    {
+        this.driver= driver;
+//        AjaxElementLocatorFactory factory = new AjaxElementLocatorFactory(driver,100);
+        PageFactory.initElements(driver,this);
+    }
+
+    @FindBy(xpath = "//table/tbody/tr[1]/td[3]/a[@id='lbii']")
+    public WebElement customerService;
+
+    @FindBy(xpath = "//*[@id='qry' and @value='WBR2']")
+    public WebElement WBR2;
+
+    @FindBy(xpath = "//*[@id='qry' and @value='WBR7']")
+    public WebElement WBR7;
+
+    @FindBy(id = "ddlformat")
+    public WebElement desiredOutputFormat;
+
+    @FindBy(id = "ddldeliopt")
+    public WebElement deliveryOption;
+
+    @FindBy(id = "btnnext")
+    public WebElement nextButton;
+
+    public void setWBR2Report() {
+        waitTillElementToBecliable(customerService);
+        waitTillElementToBecliable(WBR2);
+        this.WBR2.click();
+        if (!this.WBR2.isSelected()) {
+            this.WBR2.click();
+        }
+
+    }
+    public void selectXcelWithHeader() {
+        Select select = new Select(desiredOutputFormat);
+        select.selectByValue("XLSWH");
+    }
+
+    public void selectEmailEncryptAttachment() {
+
+        try {
+            waitTillElementToBeVisibleAndCliable(deliveryOption);
+            Select select1 = new Select(deliveryOption);
+
+            select1.selectByValue("SENDATTACH");
+        } catch (StaleElementReferenceException e) {
+            log.info(e);
+
+        }
+    }
+    public void clickOnNextButton()
+    {
+        waitTillElementToBeVisibleAndCliable(this.nextButton);
+        this.nextButton.click();
+    }
+
+    public void setWBR7Report() {
+        waitTillElementToBecliable(this.customerService);
+        waitTillElementToBecliable(WBR7);
+        WBR7.click();
+
+        if (!WBR7.isSelected()) {
+            WBR7.click();
+        }
+
+    }
+
+    private void waitTillElementToBeVisible(WebElement element)
+    {
+        new WebDriverWait(driver,10).until(ExpectedConditions.visibilityOf(element));
+    }
+    private void waitTillElementToBecliable(WebElement element)
+    {
+        new WebDriverWait(driver,10).until(ExpectedConditions.elementToBeClickable(element));
+    }
+    private void waitTillElementToBeInVisible(WebElement element)
+    {
+        new WebDriverWait(driver,10).until(ExpectedConditions.stalenessOf(element));
+    }
+    private void waitTillElementToBeVisibleAndCliable(WebElement element)
+    {
+        new WebDriverWait(driver,10).until(ExpectedConditions.visibilityOf(element));
+        new WebDriverWait(driver,10).until(ExpectedConditions.elementToBeClickable(element));
+    }
+
+}

@@ -13,6 +13,7 @@ import org.testng.Assert;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 public class InstantReports {
@@ -62,14 +63,19 @@ public class InstantReports {
     private WebElement mailBackReportSuccessful;
 
 
+
+
     private String previousDay;
     private String today;
-    public String tranReferenceNumber;
+    private String monthName;
+    private String year;
 
-    public void selectDate() {
+    private void selectDate() {
         Calendar cal = Calendar.getInstance();
         DateFormat dd = new SimpleDateFormat("dd/MM/yyyy");
+        DateFormat year = new SimpleDateFormat("yyyy");
         DateFormat time = new SimpleDateFormat("kk");
+        DateFormat monthName = new SimpleDateFormat("MMM");
         this.today = dd.format(cal.getTime());
 
         if (Integer.parseInt(time.format(cal.getTime())) < 15) {
@@ -77,9 +83,15 @@ public class InstantReports {
             if (cal.get(Calendar.DAY_OF_WEEK) == 2) {
                 cal.add(Calendar.DATE, -3);
                 this.previousDay = dd.format(cal.getTime());
+                this.monthName = monthName.format(cal.getTime());
+                this.year = year.format(cal.getTime());
+
             } else {
                 cal.add(Calendar.DATE, -1);
                 this.previousDay = dd.format(cal.getTime());
+                this.monthName = monthName.format(cal.getTime());
+                this.year = year.format(cal.getTime());
+
             }
         }else {
             this.previousDay = dd.format(cal.getTime());
@@ -95,10 +107,9 @@ public class InstantReports {
         selectEmail.click(); //close dropdown
     }
 
-    public void getInstatReport()
-    {
+    public void getInstatReport() {
         transactionDetails.click();
-        new WebDriverWait(driver,10).until(ExpectedConditions.elementToBeClickable(transactionPeriod)).click();
+        new WebDriverWait(driver, 10).until(ExpectedConditions.elementToBeClickable(transactionPeriod)).click();
 
         nextButton.click();
 
@@ -106,24 +117,41 @@ public class InstantReports {
         this.selectTransactionPeriod.click();
 
         select.selectByVisibleText("Period");
+
+    }
+    public void selectFromDate()
+    {
         selectDate();
 
-        this.fromDate.click();
+        fromDate.click();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         fromDate.click();
         fromDate.clear();
         fromDate.sendKeys(this.previousDay);
 
 
         this.toDate.click();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         this.toDate.click();
         this.toDate.clear();
         this.toDate.sendKeys(this.today);
 
         fileTypeText.click();
 
-        emailReportButton.click();
+        //emailReportButton.click();
 
     }
+
+
+
 
     public boolean isSuccessful()
     {

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+
+
+<suite name="Morning Suite"  preserve-order="true" parallel="false" thread-count="1" verbose="10">
+
+    <listeners>
+        <listener class-name="customListener.Listener"></listener>
+        <listener class-name="customListener.RetryListener"></listener>
+        <!--     <listener class-name="com.fincash.customListener.WebEventListener"></listener>  -->
+    </listeners>
+
+    <test name="sundaramStatementDownloadTest">
+        <classes>
+            <class name="bnpSundaram.SundaramStatementDownload"></class>
+        </classes>
+    </test>
+
+
+</suite>

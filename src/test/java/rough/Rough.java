@@ -17,8 +17,9 @@ public class Rough {
         DateFormat mm = new SimpleDateFormat("MM");
         DateFormat yyyy = new SimpleDateFormat("yyyy");
         DateFormat time = new SimpleDateFormat("kk");
+        DateFormat monthname = new SimpleDateFormat("MMM");
 
-        System.out.println(time.format(cal.getTime()));
+        System.out.println(monthname.format(cal.getTime()));
 
     }
 
