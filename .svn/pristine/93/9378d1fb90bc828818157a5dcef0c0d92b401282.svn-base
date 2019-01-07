@@ -1,0 +1,92 @@
+package franklinTempletonIndia;
+
+import org.apache.log4j.Logger;
+import org.testng.Assert;
+import org.testng.annotations.*;
+import testBase.TestBase;
+import uiActionFTI.Dashboard;
+import uiActionFTI.LoginPage;
+import uiActionFTI.MyAccount;
+import uiActionFTI.MyInvestors;
+
+import java.io.IOException;
+import java.util.Properties;
+
+public class FtiStatementDownload extends TestBase {
+
+    public static final Logger log = Logger.getLogger(FtiStatementDownload.class.getName());
+
+    @BeforeMethod
+    public void setup()
+    {
+        init();
+    }
+
+    LoginPage loginPage;
+    Dashboard dashboard;
+    MyAccount myAccount;
+    MyInvestors myInvestors;
+
+    public String email;
+    public String pass;
+    public String folioNo;
+
+    public void loadUserProperty() throws IOException {
+
+        this.email = System.getProperty("fti.email");
+        this.pass = System.getProperty("fti.pass");
+        this.folioNo=System.getProperty("fti.folio");
+    }
+
+    @Test
+    public void downloadFTIFile()
+    {
+        driver.get("https://www.franklintempletonindia.com");
+
+        try {
+            loadUserProperty();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        loginPage = new LoginPage(driver);
+        loginPage.login(this.email,this.pass);
+
+        try {
+            dashboard= new Dashboard(driver);
+            //dashboard.clickOnMyAccount();
+
+            myAccount = new MyAccount(driver);
+            myAccount.clickOnMyInvestor();
+
+            myInvestors = new MyInvestors(driver);
+            myInvestors.searchFolio(this.folioNo);
+
+            myInvestors.clickOnValuationStatement();
+            myInvestors.isToaster();
+            myInvestors.selectDate();
+            myInvestors.sendEmailToClient();
+
+            Assert.assertTrue(myInvestors.isMailSent());
+
+            dashboard.logout();
+        } catch (Exception e) {
+            log.error(e,e);
+            dashboard.logout();
+            throw e;
+        }
+    }
+
+
+    @AfterMethod
+    public void closeBrowser()
+    {
+        for (String handle : driver.getWindowHandles()) {
+            if (handle != null && handle.trim().length() > 0) {
+                driver.switchTo().window(handle);
+                driver.close();
+            }
+        }
+        driver.quit();
+    }
+}

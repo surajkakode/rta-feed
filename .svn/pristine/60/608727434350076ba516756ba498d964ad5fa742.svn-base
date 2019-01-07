@@ -1,0 +1,60 @@
+package uiActionCamsOnline;
+
+import org.apache.log4j.Logger;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+public class ConfirmationOfRequest {
+
+    public static final Logger log = Logger.getLogger(ConfirmationOfRequest.class.getName());
+
+    WebDriver driver;
+
+    public ConfirmationOfRequest(WebDriver driver)
+    {
+        this.driver= driver;
+        PageFactory.initElements(driver,this);
+    }
+
+    @FindBy(xpath = "//*[@id='DivMailSend']//b[contains(text(),'WBR7')]")
+    private WebElement requestNumber;
+
+    @FindBy(xpath = "//*[@id='DivMailSend']//b[contains(text(),'WBR2')]")
+    private WebElement requestNumberWBR2;
+
+
+    public boolean isRequestSubmitted()
+    {
+        try {
+            String actualText = driver.findElement(By.xpath("//div[@id='divDisMailSend']//div//h3[contains(text(),'Confirmation of Request')]")).getText();
+            String expectedText = "Confirmation of Request";
+
+            if (actualText.contains(expectedText))
+                return true;
+            else return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public void requestNumberWBR2()
+    {
+        new WebDriverWait(driver,30).until(ExpectedConditions.visibilityOf(this.requestNumberWBR2));
+        String reqNumber = this.requestNumber.getText().trim().split(" ")[0]+"R2-END";
+        log.info("requestId:"+reqNumber);
+
+    }
+
+    public void requestNumber()
+    {
+        new WebDriverWait(driver,30).until(ExpectedConditions.visibilityOf(this.requestNumber));
+        String reqNumber = this.requestNumber.getText().trim().split(" ")[0]+"R7-END";
+        log.info("requestId:"+reqNumber);
+
+    }
+}

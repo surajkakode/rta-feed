@@ -1,0 +1,78 @@
+package karvy;
+
+import org.apache.log4j.Logger;
+import org.testng.Assert;
+import org.testng.annotations.*;
+import testBase.TestBase;
+import uiActionConsolidatedAccountStatement.ConsolidatedAccountStatement;
+
+import java.io.IOException;
+import java.util.Properties;
+
+public class ConsolidatedAccStatement extends TestBase {
+
+    public static final Logger log = Logger.getLogger(KarvyFileDownload.class.getName());
+    ConsolidatedAccountStatement accountStatement;
+    @BeforeClass
+    public void setup() {
+        init();
+    }
+
+
+    public String email= "surajkakode@gmail.com";
+    public String pan="cgcpk5110m";
+    public String filePass="Fincash@01";
+    public String statementType= "summary";
+    public String toDate="";                         //  use 10/10/2018 as a string format
+    public String fromDate="";                       //  use 10/10/2018 as a string format
+
+    public void loadUserProperty() throws IOException {
+
+        this.email = System.getProperty("karvy.email");
+        this.pan = System.getProperty("karvy.pan").toUpperCase();
+        this.filePass = System.getProperty("karvy.filePass");
+        this.statementType = System.getProperty("karvy.statementType");
+        this.toDate = System.getProperty("karvy.toDate");
+        this.fromDate = System.getProperty("karvy.fromDate");
+    }
+
+    @Test
+    public void downloadKarvyFile() {
+        driver.get("https://www.karvymfs.com/platformservice/");
+
+        try {
+            loadUserProperty();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+         accountStatement = new ConsolidatedAccountStatement(driver);
+
+            log.debug(statementType);
+         if (statementType.contains("specific"))
+         {
+            accountStatement.selectSpecifiedPeriod(this.fromDate,this.toDate);
+         }
+         else {
+             accountStatement.selectStatementType(statementType);
+         }
+         accountStatement.requestToConsolidatedStatement(email,pan,filePass);
+
+         accountStatement.submitForm();
+
+
+        Assert.assertTrue(accountStatement.isRequestSubmitted());
+    }
+
+    @AfterClass
+    public void closeBrowser()
+    {
+
+        for (String handle : driver.getWindowHandles()) {
+            driver.switchTo().window(handle);
+            driver.close();
+        }
+        driver.quit();
+    }
+
+}

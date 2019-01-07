@@ -1,0 +1,200 @@
+package testheadless;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.bonigarcia.wdm.ChromeDriverManager;
+import io.github.bonigarcia.wdm.DriverManagerType;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.log4j.Logger;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeDriverService;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.json.Json;
+import org.openqa.selenium.remote.HttpCommandExecutor;
+import org.openqa.selenium.remote.SessionId;
+import org.testng.annotations.Test;
+
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+
+public class TestHeadless {
+
+    public static final Logger log = Logger.getLogger(TestHeadless.class.getName());
+
+    @Test(enabled = false)
+    public void test()
+    {
+        System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir")+ File.separator+"Drivers"+File.separator+"chromedriver.exe");
+
+        String downloadFilepath = System.getProperty("user.dir")+File.separator+"download";
+        System.out.println(downloadFilepath);
+        HashMap<String, Object> chromePrefs = new HashMap<String, Object>();
+        chromePrefs.put("profile.default_content_settings.popups", 0);
+        chromePrefs.put("download.default_directory", downloadFilepath);
+        ChromeOptions options = new ChromeOptions();
+        options.setExperimentalOption("prefs", chromePrefs);
+
+        WebDriver driver = new ChromeDriver(options);
+
+        driver.get("https://www.sundarambnpparibasfs.in/dwf/?fid=C2E35177FDE6F947BECF00BA6053F917");
+        driver.findElement(By.id("lgin:pass")).sendKeys("AAXCS1773L");
+        driver.findElement(By.id("lgin:j_idt20")).click();
+    }
+
+    @Test
+    public void headless() throws IOException {
+        System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir")+File.separator+"Drivers"+File.separator+"chromedriver.exe");
+
+        //To setup headless chrome
+        ChromeDriverManager.getInstance(DriverManagerType.CHROME);
+
+        String downloadFilepath = System.getProperty("user.dir")+File.separator+"download";
+
+        System.out.println(downloadFilepath);
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--test-type");
+        options.addArguments("--headless");
+        options.addArguments("--disable-extensions"); //to disable browser extension popup
+
+        ChromeDriverService driverService = ChromeDriverService.createDefaultService();
+        ChromeDriver driver = new ChromeDriver(driverService, options);
+
+        Map<String, Object> commandParams = new HashMap<>();
+        commandParams.put("cmd", "Page.setDownloadBehavior");
+        Map<String, String> params = new HashMap<>();
+        params.put("behavior", "allow");
+        params.put("downloadPath", downloadFilepath );
+        commandParams.put("params", params);
+        ObjectMapper objectMapper = new ObjectMapper();
+        CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+        String command = objectMapper.writeValueAsString(commandParams);
+        String u = driverService.getUrl().toString() + "/session/" + driver.getSessionId() + "/chromium/send_command";
+        HttpPost request = new HttpPost(u);
+        request.addHeader("content-type", "application/json");
+        request.setEntity(new StringEntity(command));
+        httpClient.execute(request);
+
+
+        driver.get("https://www.sundarambnpparibasfs.in/dwf/?fid=C2E35177FDE6F947BECF00BA6053F917");
+        driver.findElement(By.id("lgin:pass")).sendKeys("AAXCS1773L");
+        System.out.println("found");
+        WebElement download =driver.findElement(By.id("lgin:j_idt20"));
+        new Actions(driver).moveToElement(download).click().perform();
+        System.out.println("clicked on download");
+
+    }
+    /*@Test
+    public void headlessWorking()
+    {
+        ChromeDriverService driverService = ChromeDriverService.createDefaultService();
+        ChromeOptions options = new ChromeOptions();
+        ChromeDriver driver = new ChromeDriver(driverService, options);
+
+        Map<String, Object> commandParams = new HashMap<>();
+        commandParams.put("cmd", "Page.setDownloadBehavior");
+
+        Map<String, String> params = new HashMap<>();
+        params.put("behavior", "allow");
+        String downloadFilepath = System.getProperty("user.dir")+File.separator+"download";
+        params.put("downloadPath", downloadFilepath);
+        commandParams.put("params", params);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        HttpClient httpClient = HttpClientBuilder.create().build();
+
+        String command = objectMapper.writeValueAsString(commandParams);
+
+        String u = driverService.getUrl().toString() + "/session/" + driver.getSessionId() + "/chromium/send_command";
+
+        HttpPost request = new HttpPost(u);
+        request.addHeader("content-type", "application/json");
+        request.setEntity(new StringEntity(command));
+        httpClient.execute(request);
+
+
+    }*/
+
+    @Test(enabled = false)
+    public void HeadlessJugad()
+    {
+        //static void sendCommandForDownloadChromeHeadLess(HttpCommandExecutor driverCommandExecutor,SessionId sessionId,String downloadPath) {
+        Json json = new Json();
+        String downloadFilepath = System.getProperty("user.dir")+File.separator+"download";
+        System.out.println(downloadFilepath);
+        Map<String, Object> paramsMap = new HashMap<>();
+        paramsMap.put("cmd", "Page.setDownloadBehavior");
+        Map<String,String> cmdParamsMap = new HashMap<>();
+        cmdParamsMap.put("behavior", "allow");
+
+        cmdParamsMap.put("downloadPath", downloadFilepath);
+        paramsMap.put("params", cmdParamsMap);
+        String content = json.toJson(paramsMap);
+        log.debug("The request content is :: {}" +content);
+         URL remoteServerUri = null;
+        try {
+            Field field = HttpCommandExecutor.class.getDeclaredField("remoteServer");
+            field.setAccessible(true);
+            HttpCommandExecutor driverCommandExecutor=null;
+            remoteServerUri = (URL) field.get(driverCommandExecutor);
+        }catch (Exception e) {
+            log.debug("The HttpCommandExecutor has been modified please check with the framework team",e);
+            log.error("This will cause all the file validations to fail");
+            return;
+        }
+        CloseableHttpClient httpclient = null;
+        try {
+            httpclient = HttpClients.createDefault();
+            URIBuilder builder = new URIBuilder(remoteServerUri.toURI());
+            SessionId sessionId= null;
+            builder.setPath("session/"+sessionId.toString()+"/chromium/send_command");
+            HttpPost sendCommandPost = new HttpPost(builder.build());
+            sendCommandPost.setHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType());
+            StringEntity entity = new StringEntity(content, ContentType.APPLICATION_JSON);
+            sendCommandPost.setEntity(entity);
+            CloseableHttpResponse response = httpclient.execute(sendCommandPost);
+            int statusCode = response.getStatusLine().getStatusCode();
+            log.debug("The Response Status code is {}"+ statusCode);
+            if(statusCode <= 200 && statusCode >= 300) {
+                log.debug("Un-Successfull status code received");
+            }
+        }catch (IOException e) {
+            log.error("Error Occured while enabling download file setting for chrome headless mode");
+            log.error("This will cause all the file validations to fail",e);
+        } catch (URISyntaxException e) {
+            log.debug("this should never ever occur");
+        }finally {
+            if(httpclient != null) {
+                try {
+                    httpclient.close();
+                } catch (IOException e) {
+                    log.warn("Error Occured while closing the http client",e);
+                }
+            }
+        }
+        WebDriver driver = new ChromeDriver();
+        driver.get("https://www.sundarambnpparibasfs.in/dwf/?fid=C2E35177FDE6F947BECF00BA6053F917");
+        System.out.println("navigated to website");
+        driver.findElement(By.id("lgin:pass")).sendKeys("AAXCS1773L");
+        System.out.println("found");
+        WebElement download =driver.findElement(By.id("lgin:j_idt20"));
+        new Actions(driver).moveToElement(download).click().perform();
+        System.out.println("clicked on download");
+
+    }
+
+}

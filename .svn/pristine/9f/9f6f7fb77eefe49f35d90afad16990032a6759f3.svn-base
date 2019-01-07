@@ -1,0 +1,85 @@
+package franklinTempletonIndia;
+
+import org.apache.log4j.Logger;
+import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+import testBase.TestBase;
+import uiActionFTI.DownloadCenter;
+
+import java.io.IOException;
+
+
+public class DownloadFile extends TestBase {
+    public static final Logger log =Logger.getLogger(DownloadFile.class.getName());
+
+    @BeforeMethod
+    public void setup()
+    {
+        super.init();
+    }
+
+    public String url;
+    public String username;
+    public String pass;
+    public String reqdate;
+    public String reqtime;
+    public String gendate;
+    public String gentime;
+
+
+    DownloadCenter downloadCenter;
+
+
+    public void loadUserProperty() throws IOException {
+
+        this.url = System.getProperty("fti.url");
+        this.username = System.getProperty("fti.email");
+        this.pass = System.getProperty("fti.pass");
+        this.reqdate = System.getProperty("fti.reqDate");
+        this.reqtime = System.getProperty("fti.reqtime");
+        this.gendate = System.getProperty("fti.gendate");
+        this.gentime = System.getProperty("fti.gentime");
+        log.info(this.reqdate+" "+this.reqtime+" "+this.gendate+" "+this.gentime);
+    }
+
+    @Test
+    public void downloadFTIFile() throws InterruptedException {
+
+        try {
+            loadUserProperty();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        driver.get(url);
+
+
+            downloadCenter = new DownloadCenter(driver);
+            downloadCenter.login(this.username,this.pass);
+
+            try {
+                Assert.assertTrue(downloadCenter.matchReqAndGenDate(this.reqdate,this.reqtime,this.gendate,this.gentime));
+                downloadCenter.logout();
+                Thread.sleep(5000);
+            } catch (Exception e) {
+                log.error(e,e);
+                downloadCenter.logout();
+                Assert.assertTrue(false);
+            }
+
+    }
+
+    @AfterMethod
+    public void closeBrowser()
+    {
+        for (String handle : driver.getWindowHandles()) {
+            if (handle != null && handle.trim().length() > 0) {
+                driver.switchTo().window(handle);
+                driver.close();
+            }
+        }
+        driver.quit();
+    }
+}

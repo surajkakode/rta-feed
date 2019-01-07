@@ -1,0 +1,69 @@
+package settlementMasterReport;
+
+import org.apache.log4j.Logger;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+import testBase.TestBase;
+import uiActionBSEsettlementCalender.DownloadPage;
+
+import java.io.IOException;
+
+public class SettlementCalendar extends TestBase {
+
+    public static final Logger log = Logger.getLogger(SettlementCalendar.class.getName());
+
+    DownloadPage downloadPage;
+
+    @BeforeMethod
+    public void setup() {
+        super.init();
+    }
+
+    public void loadUserProperty() throws IOException {
+
+        this.url = System.getProperty("settlement.url");
+    }
+
+    @Test
+    public void downloadSettlementFile() {
+
+
+        try {
+            loadUserProperty();
+        } catch (IOException e) {
+            log.error(e);
+        }
+            if (url==null || url.equalsIgnoreCase("undefined"))
+            {
+                driver.get("https://www.bsestarmf.in/RptSettlementMaster.aspx");
+            }
+            else {
+                driver.get(url);
+            }
+
+        downloadPage =new DownloadPage(driver);
+        downloadPage.clickOnExportToTextButton();
+
+        try {
+            Thread.sleep(15000);
+        } catch (InterruptedException e) {
+           log.error(e);
+        }
+
+
+    }
+
+    @AfterMethod
+    public void closeBrowser()
+    {
+        for (String handle : driver.getWindowHandles()) {
+            if (handle != null && handle.trim().length() > 0) {
+                driver.switchTo().window(handle);
+                driver.close();
+            }
+        }
+        driver.quit();
+    }
+
+}

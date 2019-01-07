@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>fincash</groupId>
+    <artifactId>rtaFeed</artifactId>
+    <version>1</version>
+    <packaging>jar</packaging>
+    <!--                            Command For RTA feed download
+    mvn clean test -Dbrowser=headlessChrome -DsuiteFile=cams.xml -DcamsEmail=operations@fincash.com -DcamsFilePass=fincash01
+    mvn clean test -Dbrowser=Chrome -DsuiteFile=karvy.xml -DkarvyEmail=FINCASH -DkarvyPass=Fincash@01 -DkarvyFilePass=Fincash@01 -DkarvyFromDate="07/12/2018" -DkarvyToDate="07/12/2018"
+    mvn clean test -Dbrowser=Chrome -DsuiteFile=bnp.xml -DbnpEmail=ARN-112358 -DbnpPass=Fincash@111
+    mvn clean test -Dbrowser=Chrome -DsuiteFile=sundaram.xml -DsundEmail=ARN-112358 -DsundPass=Fincash@111
+    mvn clean test -Dbrowser=Chrome -DsuiteFile=fti.xml -DftiEmail=ARN112358 -DftiPass=Fincash@01 -DftiDEmail=operations@fincash.com
+
+                                Consolidated Holding download
+    mvn clean test -Dbrowser=headlessChrome -DsuiteFile=karvyConsolidated.xml -DkarvyStatementType=summary -DkarvyEmail=surajkakode@gmail.com -DkarvyPan=cgcpk5110m -DkarvyFilePass=Fincash@01 -DkarvyFromDate="" -DkarvyToDate=""
+
+                                Command For Customer Statement download
+    mvn clean test -Dbrowser=headlessChrome -DsuiteFile=camsSt.xml -DcamsEmail=operations@fincash.com -DcamsFilePass=fincash01 -DcamsFolio=1019500312,74185296,89898956 -DcamsAmc="Aditya birla"
+    mvn clean test -Dbrowser=headlessChrome -DsuiteFile=karvySt.xml -DkarvyEmail=FINCASH -DkarvyPass=Fincash@01 -DkarvyFilePass=Fincash@01 -DkarvyFolio=499182535433 -DkarvyAmc=reliance -DkarvyUserEmail=surajkakode@gmail.com -DkarvyStatementType=summary
+    mvn clean test -Dbrowser=headlessChrome -DsuiteFile=bnpSt.xml -DbnpEmail=ARN-112358 -DbnpPass=Fincash@111 -DbnpFolio=900000578565,900000538772
+    mvn clean test -Dbrowser=headlessChrome -DsuiteFile=SundaramSt.xml -DsundEmail=ARN-112358 -DsundPass=Fincash@111 -DsundFolio=900000578565,900000538772
+    mvn clean test -Dbrowser=headlessChrome -DsuiteFile=ftiSt.xml -DftiEmail=ARN112358 -DftiPass=Fincash@01 -DftiFolio=21367558
+-->
+
+    <properties>
+        <cams.email></cams.email>
+        <cams.filePass></cams.filePass>
+        <cams.folio></cams.folio>
+        <cams.amc></cams.amc>
+        <!--             karvy                 -->
+        <karvy.email></karvy.email>
+        <karvy.pass></karvy.pass>
+        <karvy.filePass></karvy.filePass>
+        <karvy.folio></karvy.folio>
+        <karvy.amc></karvy.amc>
+        <karvy.userEmail></karvy.userEmail>
+        <karvy.pan></karvy.pan>
+        <karvy.toDate></karvy.toDate>
+        <karvy.fromDate></karvy.fromDate>
+        <karvy.statementType></karvy.statementType>
+        <!--            bnp                  -->
+        <bnp.email></bnp.email>
+        <bnp.pass></bnp.pass>
+        <bnp.folio></bnp.folio>
+        <!--            sundaram                  -->
+        <sund.email></sund.email>
+        <sund.pass></sund.pass>
+        <sund.folio></sund.folio>
+        <!--            fti                  -->
+        <fti.email></fti.email>
+        <fti.pass></fti.pass>
+        <fti.distributerEmail></fti.distributerEmail>
+        <fti.folio></fti.folio>
+
+    </properties>
+
+    <build>
+        <!-- Source directory configuration -->
+        <sourceDirectory>src/main/java</sourceDirectory>
+        <testSourceDirectory>src/test/java</testSourceDirectory>
+        <plugins>
+
+            <!-- Following plugin executes the testng tests -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.14.1</version>
+                <configuration>
+                    <!-- Suite testng xml file to consider for test execution -->
+                    <suiteXmlFiles>
+                        <suiteXmlFile>${suiteFile}</suiteXmlFile>
+                    </suiteXmlFiles>
+                    <systemPropertyVariables>
+                        <cams.email>${camsEmail}</cams.email>
+                        <cams.filePass>${camsFilePass}</cams.filePass>
+                        <cams.folio>${camsFolio}</cams.folio>
+                        <cams.amc>${camsAmc}</cams.amc>
+                        <!--             karvy                 -->
+                        <karvy.email>${karvyEmail}</karvy.email>
+                        <karvy.pass>${karvyPass}</karvy.pass>
+                        <karvy.filePass>${karvyFilePass}</karvy.filePass>
+                        <karvy.folio>${karvyFolio}</karvy.folio>
+                        <karvy.amc>${karvyAmc}</karvy.amc>
+                        <karvy.userEmail>${karvyUserEmail}</karvy.userEmail>
+                        <karvy.pan>${karvyPan}</karvy.pan>
+                        <karvy.toDate>${karvyToDate}</karvy.toDate>
+                        <karvy.fromDate>${karvyFromDate}</karvy.fromDate>
+                        <karvy.statementType>${karvyStatementType}</karvy.statementType>
+                        <!--            bnp                  -->
+                        <bnp.email>${bnpEmail}</bnp.email>
+                        <bnp.pass>${bnpPass}</bnp.pass>
+                        <bnp.folio>${bnpFolio}</bnp.folio>
+                        <!--            sundaram                  -->
+                        <sund.email>${sundEmail}</sund.email>
+                        <sund.pass>${sundPass}</sund.pass>
+                        <sund.folio>${sundFolio}</sund.folio>
+                        <!--            fti                  -->
+                        <fti.email>${ftiEmail}</fti.email>
+                        <fti.pass>${ftiPass}</fti.pass>
+                        <fti.distributerEmail>${ftiDEmail}</fti.distributerEmail>
+                        <fti.folio>${ftiFolio}</fti.folio>
+                    </systemPropertyVariables>
+
+                </configuration>
+            </plugin>
+<!--
+            &lt;!&ndash;To read properties from command line &ndash;&gt;
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>properties-maven-plugin</artifactId>
+                <version>1.0.0</version>
+                <executions>
+                    <execution>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>write-project-properties</goal>
+                        </goals>
+                        <configuration>
+                            <outputFile>${project.build.testOutputDirectory}/my.properties</outputFile>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>-->
+
+            <!-- Compiler plugin configures the java version to be usedfor compiling
+                the code -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.0</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+
+
+            <!--Aws lamda plugin for making jar-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>2.3</version>
+                <configuration>
+                    <createDependencyReducedPom>false</createDependencyReducedPom>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+
+        <!-- https://mvnrepository.com/artifact/com.github.detro.ghostdriver/phantomjsdriver -->
+        <!--<dependency>
+            <groupId>com.github.detro.ghostdriver</groupId>
+            <artifactId>phantomjsdriver</artifactId>
+            <version>1.0.1</version>
+        </dependency>-->
+        <!-- https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-chrome-driver -->
+       <!-- <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-chrome-driver</artifactId>
+            <version>3.14.0</version>
+        </dependency>-->
+
+        <!-- https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-server -->
+        <!--<dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-server</artifactId>
+            <version>3.14.0</version>
+        </dependency>-->
+        <!-- https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java -->
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <version>3.14.0</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/io.github.bonigarcia/webdrivermanager -->
+        <dependency>
+            <groupId>io.github.bonigarcia</groupId>
+            <artifactId>webdrivermanager</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+
+
+        <!-- https://mvnrepository.com/artifact/org.testng/testng -->
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>6.13.1</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.beust</groupId>
+            <artifactId>jcommander</artifactId>
+            <version>1.48</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/log4j/log4j -->
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.apache.poi/poi -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>3.17</version>
+        </dependency>
+
+
+        <!-- https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>3.17</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-io -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>1.3.2</version>
+        </dependency>
+        <!--<dependency>
+            <groupId>com.paulhammant</groupId>
+            <artifactId>ngwebdriver</artifactId>
+            <version>1.1.3</version>
+        </dependency>-->
+
+        <!-- https://mvnrepository.com/artifact/com.relevantcodes/extentreports -->
+        <dependency>
+            <groupId>com.relevantcodes</groupId>
+            <artifactId>extentreports</artifactId>
+            <version>2.41.2</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-lambda -->
+        <!--<dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-lambda</artifactId>
+            <version>1.11.434</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-lambda-java-core</artifactId>
+            <version>1.1.0</version>
+        </dependency>-->
+        <!--<dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-api</artifactId>
+            <version>3.12.0</version>
+        </dependency>-->
+
+    </dependencies>
+</project>

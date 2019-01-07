@@ -1,0 +1,56 @@
+package bnpSundaram;
+
+import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+import testBase.TestBase;
+
+import java.io.IOException;
+import java.util.logging.Logger;
+
+public class DownloadFile extends TestBase {
+
+    public static final Logger log = Logger.getLogger(DownloadFile.class.getName());
+
+    @BeforeMethod
+    public void setup() {
+        init();
+    }
+
+    public String url;
+
+
+    public void loadUserProperty() throws IOException {
+
+        this.url = System.getProperty("url");
+    }
+
+    @Test
+    public void downloadKarvyFile() throws InterruptedException {
+
+
+
+        try {
+            loadUserProperty();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        driver.get(url);
+
+
+    }
+
+    @AfterMethod
+    public void closeBrowser()
+    {
+        for (String handle : driver.getWindowHandles()) {
+            if (handle != null && handle.trim().length() > 0) {
+                driver.switchTo().window(handle);
+                driver.close();
+            }
+        }
+        driver.quit();
+    }
+}

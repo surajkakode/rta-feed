@@ -1,0 +1,158 @@
+package uiActionFTI;
+
+import org.apache.log4j.Logger;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class DownloadCenter {
+
+    public static final Logger log = Logger.getLogger(DownloadCenter.class.getName());
+
+    WebDriver driver;
+
+    public DownloadCenter (WebDriver driver)
+    {
+        this.driver= driver;
+        PageFactory.initElements(driver,this);
+    }
+
+    @FindBy(name = "USER_NAME_transactPage")
+    private WebElement loginId;
+
+    @FindBy(name = "PASSWORD_transactPage")
+    private  WebElement password;
+
+    @FindBy(xpath = "//form[@name='existingInvestorsWithLogin']//button[contains(text(),'Submit')]")
+    private WebElement submitButton;
+
+    @FindBy(xpath = "//ftic-custom-loader//*[contains(text(),'Please wait')]")
+    public WebElement pleaseWait;
+
+    /*@FindBy(xpath = "//*[@class='ui-grid-canvas']/div[1]/div/div[2]//self::div[contains(text(),'"+date+"')]")
+    private List <WebElement> requestedDate;*/
+
+    /*@FindBy(xpath = "//*[@class='ui-grid-canvas']//img")
+    private WebElement txtFile;*/
+
+    @FindBy(xpath = "//*[contains(@class,'fti-loginBtn') and contains(@class,'dropdown') and @type='button']/parent::*[contains(@class,'desktop')]")
+    private WebElement loginDropDownButton;
+
+    @FindBy(xpath = "//a[contains(text(),'Logout')]")
+    private WebElement logout;
+
+
+
+    public void login(String email, String password)
+    {
+        waitTillInvisiblityOfPleaseWait();
+        new WebDriverWait(driver,20).until(ExpectedConditions.visibilityOf(this.loginId));
+
+        this.loginId.clear();
+        this.loginId.sendKeys(email);
+        this.password.clear();
+        this.password.sendKeys(password);
+
+        submitButton.click();
+
+    }
+
+
+
+    public boolean matchReqAndGenDate(String reqdate, String reqtime, String gendate, String gentime)
+    {
+        waitTillInvisiblityOfPleaseWait();
+        try {
+            new WebDriverWait(driver,20).until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@class='ui-grid-canvas']/div[1]//img")));
+        } catch (Exception e) {
+            log.error("Aditional check");
+        }
+
+        for(int i=1; i<=10;i++)
+        {
+            try {
+                new WebDriverWait(driver,30).until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@class='ui-grid-canvas']/div["+i+"]/div/div[2]//self::div[contains(text(),'"+reqdate+"')]")));
+                String actualReqDate = driver.findElement(By.xpath("//*[@class='ui-grid-canvas']/div["+i+"]/div/div[2]//self::div[contains(text(),'"+reqdate+"')]")).getText();
+                String actualGenDate = driver.findElement(By.xpath("//*[@class='ui-grid-canvas']/div["+i+"]/div/div[3]//self::div[contains(text(),'"+gendate+"')]")).getText();
+                log.info("actual Req date is :"+actualReqDate);
+                log.info("actual Gen date is :"+actualGenDate);
+                if (actualReqDate.contains(reqtime) && actualGenDate.contains(gentime))
+                {
+
+                    WebElement txtFile = driver.findElement(By.xpath("//*[@class='ui-grid-canvas']/div["+i+"]//img"));
+                    new Actions(driver).moveToElement(txtFile).click().perform();
+                    log.info("clicked on file to download");
+                    Thread.sleep(10000);
+
+                    return true;
+                }
+            } catch (Exception e) {
+                log.error("Not Found in "+i+" row. Going to next Row");
+            }
+        }
+        return false;
+
+
+    }
+
+    private void waitTillInvisiblityOfPleaseWait()
+    {
+        try {
+            new WebDriverWait(driver,30).until(ExpectedConditions.invisibilityOf(this.pleaseWait));
+        } catch (Exception e) {
+            log.error("Please wait not invisible. Ignoring it.");
+        }
+    }
+
+    public void logout()
+    {
+        logout.click();
+        try {
+            //waitTillInvisiblityOfPleaseWait();
+        } catch (Exception e) {
+            log.error("extra check");
+        }
+        try {
+
+            new WebDriverWait(driver,10).until(ExpectedConditions.elementToBeClickable(this.loginDropDownButton));
+        } catch (Exception e) {
+            log.error(e);
+        }
+    }
+
+
+
+      /* public boolean isRequestedDateMatched(String date)
+    {
+        List<WebElement> list = new ArrayList(this.requestedDate);
+        for (int i=0;i<list.size();i++)
+        {
+            log.info(list.get(i).getText());
+        }
+        String requestedDate= null;
+        date = date.toLowerCase();
+        if (requestedDate.equalsIgnoreCase(date))
+            return true;
+        else return false;
+    }*/
+
+        /*  public void downloadTxtFile(String date)
+    {
+        waitTillInvisiblityOfPleaseWait();
+        if (isRequestedDateMatched(date)==true)
+        {
+            this.txtFile.click();
+        }
+        else {
+            log.info("file not generated");
+        }
+    }*/
+}

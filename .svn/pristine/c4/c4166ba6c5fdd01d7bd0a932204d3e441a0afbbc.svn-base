@@ -1,0 +1,167 @@
+package uiActionBNPSundaram;
+
+import org.apache.log4j.Logger;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+public class InvestorSOA {
+
+    public static final Logger log= Logger.getLogger(InvestorSOA.class.getName());
+
+    WebDriver driver;
+
+    public InvestorSOA(WebDriver driver)
+    {
+        this.driver= driver;
+        PageFactory.initElements(driver,this);
+    }
+
+    String [] folio;
+
+    @FindBy(xpath = "//*[@id='j_idt15:j_idt22' or @id='j_idt16:j_idt23']") ////a[contains(text(),'Reports')]
+    private WebElement reports;
+
+    @FindBy(id = "j_idt128:j_idt131:distributorReports:out") ////div[@class='iceMnuBarVrt']//span[contains(text(),'Investor')]
+    private WebElement investorSOA;
+
+    @FindBy(id = "searchBrokF:investorsoafolio2:_2")  ////*[@type='radio']/following::*[contains(text(),'Multiple(SOA generation)')]
+    private WebElement multipleSOA;
+
+    @FindBy(id = "searchBrokF:investorsoafolio2:_1")   ////*[@type='radio']/following::*[contains(text(),'Single Investor Search')]
+    private WebElement singleSOA;
+
+    @FindBy(id = "searchBrokF:textfolio")
+    private WebElement folioTextBox;
+
+    @FindBy(id = "searchBrokF:j_idt171") ////*[@type='submit' and @value='Search']
+    private WebElement searchFolioButton;
+
+    @FindBy(id = "searchBrokF:j_idt233") ////*[contains(text(),'Statements')]/following::*[@type='image'][1]
+    private WebElement proceed;
+
+    @FindBy(id = "searchBrokF:sNilTrxBrokM")
+    private WebElement successMsg;
+
+    public void waitForLoad()
+    {
+        new WebDriverWait(driver,10).until(ExpectedConditions.invisibilityOfElementLocated(By.className("dumbBoxOverlay")));
+    }
+
+    public void clickOnInvestorSOA()
+    {
+        waitForLoad();
+        new WebDriverWait(driver,10).until(ExpectedConditions.visibilityOf(this.investorSOA));
+        new WebDriverWait(driver,10).until(ExpectedConditions.elementToBeClickable(this.investorSOA));
+        this.investorSOA.click();
+    }
+
+    public void clickOnMultipleSOA()
+    {
+        waitForLoad();
+        try {
+            new WebDriverWait(driver,10).until(ExpectedConditions.visibilityOf(this.multipleSOA));
+            new WebDriverWait(driver,10).until(ExpectedConditions.elementToBeClickable(this.multipleSOA));
+            this.multipleSOA.click();
+        } catch (Exception e) {
+            if(!multipleSOA.isSelected())
+            {
+                this.multipleSOA.click();
+            }
+        }
+
+    }
+
+    public void inputMultipleFolio(String[] folio )
+    {
+        this.folio = folio;
+        new WebDriverWait(driver,10).until(ExpectedConditions.elementToBeClickable(this.folioTextBox));
+        for (String i:folio)
+        {
+            this.folioTextBox.sendKeys(i);
+            this.folioTextBox.sendKeys(Keys.ENTER);
+        }
+
+        clickOnSearch();
+
+    }
+
+    private boolean isFolioFound()
+    {
+        try {
+            return new WebDriverWait(driver,10).until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[text()='Folio']/following::*[text()='Message']/following::*[text()='"+folio[0]+"']"))).isDisplayed();
+        } catch (Exception e) {
+            log.info("Not found");
+            return false;
+        }
+    }
+
+    private void clickOnSearch()
+    {
+        do {
+            this.searchFolioButton.click();
+            waitForLoad();
+        }while (isFolioFound()==false);
+    }
+
+    public final String  PreviousFinancialYear = "Previous Financial Year";
+    public final String  CurentAndPreviousFinancialYear = "Current  and Previous Financial Year";
+    public final String  CurrentFinancialYear = "Current Financial Year";
+    public final String  SinceInception = "Since Inception";
+    public final String  CustomDate = "Custom Date";
+    public final String  Pdf ="PDF";
+    public final String  EmailToInvestor ="Email to Investor";
+    public final String  SeparatePdfFilesAndCompressedZipFile= "Separate pdf files and compressed zip file";
+    public final String  SinglePdfFile = "Single pdf file";
+
+
+    public void selectRadioButtons(String timePeriod)
+    {
+        waitForLoad();
+        new WebDriverWait(driver,10).until(ExpectedConditions.elementToBeClickable(By.xpath("//*[contains(text(),'Statements')]/following::*[@type='radio']/following::*[contains(text(),'"+timePeriod+"')]"))).click();
+    }
+
+    public void clickOnProceed()
+    {
+        try {
+            waitForLoad();
+            this.proceed.click();
+            waitForLoad();
+        } catch (Exception e) {
+            waitForLoad();
+            this.proceed.click();
+            waitForLoad();
+        }
+    }
+
+    public boolean isRequestSubmitted()
+    {
+        waitForLoad();
+        try {
+
+            String actualText = new WebDriverWait(driver,10).until(ExpectedConditions.visibilityOf(this.successMsg)).getText(); ////*[contains(text(),'Statements')]/following::*[contains(text(),'sent successfully')]
+            String expectedText = "sent successfully";
+
+            if (actualText.contains(expectedText) && successMsg.isDisplayed())
+            {
+                //log.info("sent successfully");
+                return true;
+            } else{
+                //log.info("not sent");
+                return false;
+            }
+        } catch (Exception e) {
+            log.error(e);
+            log.info("not sent catch block");
+            return false;
+        }
+    }
+
+
+
+}

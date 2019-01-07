@@ -1,0 +1,63 @@
+package bnpSundaram;
+
+import org.apache.log4j.Logger;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+import testBase.TestBase;
+import uiActionBNPSundaram.DownloadPage;
+
+import java.io.IOException;
+
+
+public class DownloadFileBS extends TestBase {
+
+    public static final Logger log = Logger.getLogger(DownloadFileBS.class.getName());
+
+    @BeforeMethod
+    public void setup() {
+        init();
+    }
+
+    public String url;
+    public String filePassword;
+    public String downloadPath;
+
+    DownloadPage downloadPage;
+
+
+    public void loadUserProperty() throws IOException {
+
+        this.url = System.getProperty("bs.url");
+        this.filePassword = System.getProperty("bs.filePassword");
+
+    }
+
+    @Test
+    public void downloadBSFile() throws InterruptedException {
+
+        try {
+            loadUserProperty();
+        } catch (IOException e) {
+            log.error(e);
+        }
+
+        driver.get(url);
+        downloadPage = new DownloadPage(driver);
+        downloadPage.downloadFile(this.filePassword);
+        Thread.sleep(15000);
+
+    }
+
+    @AfterMethod
+    public void closeBrowser()
+    {
+        for (String handle : driver.getWindowHandles()) {
+            if (handle != null && handle.trim().length() > 0) {
+                driver.switchTo().window(handle);
+                driver.close();
+            }
+        }
+        driver.quit();
+    }
+}

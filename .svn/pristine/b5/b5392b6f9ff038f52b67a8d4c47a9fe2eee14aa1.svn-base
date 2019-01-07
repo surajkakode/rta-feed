@@ -1,0 +1,144 @@
+package uiActionKarvyMfs;
+
+import org.apache.log4j.Logger;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.util.Set;
+
+
+public class AccountStatementDownload {
+
+    public static final Logger log= Logger.getLogger(Dashboard.class.getName());
+
+    WebDriver driver;
+
+    public AccountStatementDownload(WebDriver driver)
+    {
+        this.driver= driver;
+        PageFactory.initElements(driver,this);
+    }
+
+    public String summary = "Summary";
+    public String detailed = "Detailed";
+    public String financialYear = "Financial Year";
+    private String parentWindowHandle;
+
+    @FindBy(xpath = "//input[@name='txtFromDate']")
+    private WebElement fromDate;
+
+    @FindBy(xpath = "//input[@name='txtToDate']")
+    private WebElement toDate;
+
+    @FindBy(xpath = "//*[@id='chkAllItems' and @type='checkbox']")
+    private WebElement selectAllScheme;
+
+
+    @FindBy(xpath = "//*[@id='btnViewAndPrint']")
+    private WebElement viewStatement;
+
+    @FindBy(xpath = "//*[@class='loader']")
+    private WebElement loader;
+
+    @FindBy(xpath = "//*[@id='IMG1' or @alt='Mail']")
+    private WebElement mailIconButton;
+
+    @FindBy(xpath = "//*[@id='txtTo' and @type='text']")
+    private WebElement sendMailTo;
+
+    @FindBy(xpath = "//*[@id='btnSend' and @type='button']")
+    private WebElement sendMailButton;
+
+    public void clickOnSelectOption(String option)
+    {
+        new WebDriverWait(driver,10).until(ExpectedConditions.elementToBeClickable(By.xpath("//label[text()='"+option+"']"))).click();
+        //driver.findElement(By.xpath("//label[text()='"+option+"']"));
+    }
+
+    //optional method, By default the date is selected from inception to today
+    public void selectDate(String from, String to)
+    {
+        this.fromDate.clear();
+        this.fromDate.sendKeys(from);
+
+        this.toDate.clear();
+        this.toDate.sendKeys(to);
+    }
+
+    public void selectAllSchemes()
+    {
+        selectAllScheme.click();
+    }
+
+    public void clickOnViewStatement()
+    {
+        this.viewStatement.click();
+        new WebDriverWait(driver,10).until(ExpectedConditions.invisibilityOf(loader));
+    }
+
+    private void executeJavascriptTosendMail()
+    {
+        log.debug("executing by javaScript");
+        ((JavascriptExecutor) driver).executeScript("fnMailback()");
+    }
+
+    public void sendMail(String userEmail)
+    {
+
+        this.parentWindowHandle= driver.getWindowHandle();
+        new WebDriverWait(driver,60).until(ExpectedConditions.visibilityOf(this.mailIconButton));
+        new WebDriverWait(driver,60).until(ExpectedConditions.elementToBeClickable(this.mailIconButton));
+
+        try {
+            this.mailIconButton.click();
+        } catch (Exception e) {
+            executeJavascriptTosendMail();
+        }
+
+
+        Set <String> allWindowHandles = driver.getWindowHandles();
+
+        for(String handle : allWindowHandles)
+        {
+            log.info("Window handle - > " + handle);
+            if (!handle.equals(parentWindowHandle))
+            {
+                driver.switchTo().window(handle);
+                try {
+                    new WebDriverWait(driver,10).until(ExpectedConditions.elementToBeClickable(this.sendMailTo));
+                    break;
+                } catch (Exception e) {
+                    log.debug("Going  to next window");
+                }
+
+            }
+        }
+
+        driver.manage().window().maximize();
+        this.sendMailTo.sendKeys(userEmail);
+        this.sendMailButton.click();
+
+    }
+
+    public boolean isMailSent()
+    {
+        try {
+            new WebDriverWait(driver,10).until(ExpectedConditions.alertIsPresent()).accept();
+            driver.switchTo().window(parentWindowHandle);
+            return true;
+        } catch (Exception e) {
+
+            driver.switchTo().window(parentWindowHandle);
+            return false;
+        }
+
+
+    }
+
+}

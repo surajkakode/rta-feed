@@ -1,0 +1,106 @@
+package franklinTempletonIndia;
+
+import org.apache.log4j.Logger;
+import org.testng.Assert;
+import org.testng.annotations.*;
+import testBase.TestBase;
+import uiActionFTI.Dashboard;
+import uiActionFTI.InstantReports;
+import uiActionFTI.LoginPage;
+import uiActionFTI.MyAccount;
+
+import java.io.IOException;
+
+public class FtiFileDownload extends TestBase{
+
+    public static final Logger log = Logger.getLogger(FtiFileDownload.class.getName());
+
+    @BeforeMethod
+    public void setup()
+    {
+        init();
+    }
+
+    LoginPage loginPage;
+    Dashboard dashboard;
+    MyAccount myAccount;
+    InstantReports instantReports;
+
+    public String email;
+    public String pass;
+    public String distributerEmail;
+    public String fromDate;             //format should be dd/mm/yyyy
+    public String toDate;               //format should be dd/mm/yyyy
+
+    public void loadUserProperty() throws IOException {
+
+        this.email = System.getProperty("fti.email");
+        this.pass = System.getProperty("fti.pass");
+        this.distributerEmail = System.getProperty("fti.distributerEmail");
+        this.fromDate=System.getProperty("fti.fromDate");
+        this.toDate=System.getProperty("fti.toDate");
+    }
+
+    @Test
+    public void downloadFTIFile()
+    {
+        driver.get("https://www.franklintempletonindia.com");
+
+        try {
+            loadUserProperty();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        log.debug(this.fromDate);
+        log.debug(this.toDate);
+
+         loginPage = new LoginPage(driver);
+         loginPage.login(this.email,this.pass);
+
+        try {
+            dashboard = new Dashboard(driver);
+            //dashboard.clickOnMyAccount();
+
+            myAccount = new MyAccount(driver);
+            myAccount.clickOnInstantReport();
+
+            instantReports = new InstantReports(driver);
+            instantReports.setEmailID(this.distributerEmail);
+
+            instantReports.clickOnTransactionPeriod();
+            instantReports.setSelectTransactionPeriod();
+
+            if(this.fromDate==null || this.fromDate.equals(null) || this.fromDate.equals("${ftiFromDate}") || this.fromDate.equals(" ")) {
+
+                instantReports.selectAutoDate();
+            }
+            else {
+                instantReports.inputDate(this.fromDate,this.toDate);  //format should be dd/mm/yyyy
+            }
+
+            instantReports.clickSelectText();
+            instantReports.clickOnEmailReportButton();
+
+            Assert.assertTrue(instantReports.isSuccessful());
+
+            dashboard.logout();
+        } catch (Exception e) {
+            log.error(e);
+            dashboard.logout();
+        }
+
+    }
+
+    @AfterMethod
+    public void closeBrowser()
+    {
+        for (String handle : driver.getWindowHandles()) {
+            if (handle != null && handle.trim().length() > 0) {
+                driver.switchTo().window(handle);
+                driver.close();
+            }
+        }
+        driver.quit();
+    }
+}

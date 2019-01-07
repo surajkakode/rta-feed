@@ -1,0 +1,112 @@
+package uiActionCamsOnline;
+
+import org.apache.log4j.Logger;
+import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import utility.Utility;
+
+public class ReportSelection extends Utility{
+
+    public static final Logger log = Logger.getLogger(ReportSelection.class.getName());
+    WebDriver driver;
+
+
+    public ReportSelection(WebDriver driver)
+    {
+        super(driver);
+        this.driver= driver;
+        PageFactory.initElements(driver,this);
+    }
+
+    @FindBy(xpath = "//*[@id='lbii']")
+    public WebElement customerService;
+
+    @FindBy(xpath = "//*[@id='qry' and @value='WBR2']")
+    public WebElement WBR2;
+
+    @FindBy(xpath = "//*[@id='qry' and @value='WBR7']")
+    public WebElement WBR7;
+
+    @FindBy(id = "ddlformat")
+    public WebElement desiredOutputFormat;
+
+    @FindBy(id = "ddldeliopt")
+    public WebElement deliveryOption;
+
+    @FindBy(id = "btnnext")
+    public WebElement nextButton;
+
+    public void setWBR2Report() {
+        waitTillElementToBecliable(customerService);
+        try {
+            waitTillElementToBeVisible(WBR2);
+        } catch (Exception e) {
+            this.customerService.click();
+        }
+        waitTillElementToBecliable(WBR2);
+        this.WBR2.click();
+        if (!this.WBR2.isSelected()) {
+            this.WBR2.click();
+        }
+
+    }
+    public void selectXcelWithHeader() {
+        Select select = new Select(desiredOutputFormat);
+        select.selectByValue("XLSWH");
+    }
+
+    public void selectEmailEncryptAttachment() {
+
+        try {
+            waitTillElementToBeVisibleAndCliable(deliveryOption);
+            Select select1 = new Select(deliveryOption);
+
+            select1.selectByValue("SENDATTACH");
+        } catch (StaleElementReferenceException e) {
+            log.error(e);
+
+        }
+    }
+    public void selectEmailADownloadLink() {
+
+        try {
+            waitTillElementToBeVisibleAndCliable(deliveryOption);
+            Select select1 = new Select(deliveryOption);
+
+            select1.selectByValue("DOWNLINK");
+        } catch (StaleElementReferenceException e) {
+            log.error(e);
+
+        }
+    }
+    public void clickOnNextButton()
+    {
+        waitTillElementToBeVisibleAndCliable(this.nextButton);
+        this.nextButton.click();
+    }
+
+    public void setWBR7Report() {
+        waitTillElementToBecliable(this.customerService);
+        try {
+            waitTillElementToBeVisible(WBR7);
+        } catch (Exception e) {
+            this.customerService.click();
+        }
+        waitTillElementToBecliable(WBR7);
+        WBR7.click();
+
+        if (!WBR7.isSelected()) {
+            WBR7.click();
+        }
+
+    }
+
+
+
+}

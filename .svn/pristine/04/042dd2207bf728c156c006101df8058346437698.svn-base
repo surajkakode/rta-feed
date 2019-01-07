@@ -1,0 +1,90 @@
+package cams;
+
+
+import org.apache.log4j.Logger;
+import org.testng.Assert;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
+import testBase.TestBase;
+import uiActionCamsOnline.*;
+
+import java.io.IOException;
+import java.util.Properties;
+
+public class CamsStatementDownload extends TestBase {
+
+    public static final Logger log = Logger.getLogger(CamsStatementDownload.class.getName());
+
+
+    @BeforeTest
+    public void setup() {
+        init();
+    }
+
+    DistributorMailbackServiceDisclaimer distributorMailbackServiceDisclaimer;
+    DistributorMailbackService distributorMailbackService;
+    ReportSelection reportSelection;
+    QueryParameters queryParameters;
+    QueryConfirmation queryConfirmation;
+    ConfirmationOfRequest confirmationOfRequest;
+
+    public String email = "operations@fincash.com";
+    public String pass = "fincash01";
+    public String[] folio;
+    public String amc = "aditya birla";
+
+    public void loadUserProperty() throws IOException {
+        java.io.InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("my.properties");
+        java.util.Properties properties = new Properties();
+        properties.load(inputStream);
+        this.email = properties.getProperty("cams.email");
+        this.folio = properties.getProperty("cams.folio").split(",");
+        this.amc= properties.getProperty("cams.amc");
+        this.pass = properties.getProperty("cams.filePass");
+    }
+
+    @Test
+    public void camsStatementDownload() {
+        driver.get("https://www.camsonline.com/DistributorServices/COL_Mailbackservice.aspx");
+
+        try {
+            loadUserProperty();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        distributorMailbackServiceDisclaimer = new DistributorMailbackServiceDisclaimer(driver);
+        distributorMailbackServiceDisclaimer.acceptDisclaimer();
+
+        distributorMailbackService = new DistributorMailbackService(driver);
+        distributorMailbackService.setEmailId(this.email);
+        distributorMailbackService.setAmc(this.amc);
+
+        reportSelection = new ReportSelection(driver);
+        reportSelection.setWBR7Report();
+        reportSelection.selectXcelWithHeader();
+        //reportSelection.selectEmailEncryptAttachment();
+        reportSelection.selectEmailADownloadLink();
+
+        reportSelection.clickOnNextButton();
+
+        queryParameters = new QueryParameters(driver);
+        queryParameters.setFolio(this.folio);
+
+        queryConfirmation = new QueryConfirmation(driver);
+        queryConfirmation.getQueryConfirmationText();
+        queryConfirmation.setPassword(this.pass,this.pass);
+
+        confirmationOfRequest = new ConfirmationOfRequest(driver);
+        Assert.assertTrue(confirmationOfRequest.isRequestSubmitted());
+        confirmationOfRequest.requestNumber();
+    }
+
+    @AfterTest
+    public void closeBrowser()
+    {
+        driver.close();
+    }
+
+}

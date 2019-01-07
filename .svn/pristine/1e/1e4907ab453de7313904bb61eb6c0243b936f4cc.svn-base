@@ -1,0 +1,105 @@
+package cams;
+
+import org.testng.Assert;
+import org.testng.annotations.*;
+import testBase.TestBase;
+import uiActionCamsOnline.*;
+
+import java.io.IOException;
+import java.util.Properties;
+import java.util.logging.Logger;
+
+public class CamsFileDownload extends TestBase {
+
+    public static final Logger log = Logger.getLogger(CamsFileDownload.class.getName());
+
+
+    @BeforeMethod
+    public void setup()
+    {
+        init();
+    }
+
+    DistributorMailbackServiceDisclaimer distributorMailbackServiceDisclaimer;
+    DistributorMailbackService distributorMailbackService;
+    ReportSelection reportSelection;
+    QueryParameters queryParameters;
+    QueryConfirmation queryConfirmation;
+    ConfirmationOfRequest confirmationOfRequest;
+
+    public String email;
+    public String pass;
+    public String fromDate;
+    public String toDate;
+    public String type;
+
+    public void loadUserProperty() throws IOException {
+
+         this.email = System.getProperty("cams.email");
+         this.pass = System.getProperty("cams.filePass");
+        this.fromDate=System.getProperty("cams.fromDate");
+        this.toDate=System.getProperty("cams.toDate");
+        this.type=System.getProperty("cams.type");
+    }
+
+    @Test
+    public void downloadKamsFile()
+    {
+        driver.get("https://www.camsonline.com/DistributorServices/COL_Mailbackservice.aspx");
+
+        try {
+            loadUserProperty();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        distributorMailbackServiceDisclaimer = new DistributorMailbackServiceDisclaimer(driver);
+        distributorMailbackServiceDisclaimer.acceptDisclaimer();
+
+        distributorMailbackService=new DistributorMailbackService(driver);
+        distributorMailbackService.distributorMailbackService(this.email);
+
+        reportSelection = new ReportSelection(driver);
+        reportSelection.setWBR2Report();
+        reportSelection.selectXcelWithHeader();
+        if (type.equals("link"))
+        {
+            reportSelection.selectEmailADownloadLink();
+        }else {
+            reportSelection.selectEmailADownloadLink();
+        }
+        reportSelection.clickOnNextButton();
+
+        queryParameters = new QueryParameters(driver);
+
+
+        if(this.fromDate==null || this.fromDate.equals(null) || this.fromDate.equals("${camsFromDate}") || this.fromDate.equals(" ")) {
+
+            queryParameters.setFromDate();
+        }
+        else {
+            queryParameters.inputDate(this.fromDate,this.toDate);  //format should be dd/mm/yyyy
+        }
+
+        queryConfirmation = new QueryConfirmation(driver);
+        queryConfirmation.getQueryConfirmationText();
+        queryConfirmation.setPassword(this.pass,this.pass);
+
+        confirmationOfRequest = new ConfirmationOfRequest(driver);
+        Assert.assertTrue(confirmationOfRequest.isRequestSubmitted());
+
+    }
+
+    @AfterMethod
+    public void closeBrowser()
+    {
+
+        for (String handle : driver.getWindowHandles()) {
+            if (handle != null && handle.trim().length() > 0) {
+                driver.switchTo().window(handle);
+                driver.close();
+            }
+        }
+        driver.quit();
+    }
+}

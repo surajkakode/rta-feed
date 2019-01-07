@@ -1,0 +1,67 @@
+package uiActionFTI;
+
+import org.apache.log4j.Logger;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+public class DownloadCenter {
+
+    public static final Logger log = Logger.getLogger(DownloadCenter.class.getName());
+
+    WebDriver driver;
+
+    public DownloadCenter (WebDriver driver)
+    {
+        this.driver= driver;
+        PageFactory.initElements(driver,this);
+    }
+
+    @FindBy(name = "USER_NAME_transactPage")
+    private WebElement loginId;
+
+    @FindBy(xpath = "PASSWORD_transactPage")
+    private  WebElement password;
+
+    @FindBy(xpath = "//*[@name='PASSWORD_transactPage']/following::button[contains(text(),'Submit')]")
+    private WebElement submitButton;
+
+    @FindBy(xpath = "//ftic-custom-loader//*[contains(text(),'Please wait')]")
+    public WebElement pleaseWait;
+
+    @FindBy(xpath = "//*[@class='ui-grid-canvas']//div[contains(text(),'31 Dec 2018')]")
+    private WebElement requestedDate;
+
+    @FindBy(xpath = "//*[@class='ui-grid-canvas']//img")
+    private WebElement txtFile;
+
+    public boolean isRequestedDateMatched(String date)
+    {
+
+        String requestedDate = this.requestedDate.getText().toLowerCase();
+        date = date.toLowerCase();
+        if (requestedDate.equalsIgnoreCase(date))
+            return true;
+        else return false;
+    }
+
+    public void downloadTxtFile(String date)
+    {
+        waitTillInvisiblityOfPleaseWait();
+        if (isRequestedDateMatched(date)==true)
+        {
+            this.txtFile.click();
+        }
+        else {
+            log.info("file not generated");
+        }
+    }
+
+    private void waitTillInvisiblityOfPleaseWait()
+    {
+        new WebDriverWait(driver,40).until(ExpectedConditions.invisibilityOf(this.pleaseWait));
+    }
+}

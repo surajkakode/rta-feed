@@ -1,0 +1,68 @@
+package uiActionFTI;
+
+import org.apache.log4j.Logger;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+public class MyAccount {
+
+    public static final Logger log = Logger.getLogger(MyAccount.class.getName());
+
+    WebDriver driver;
+
+    public MyAccount(WebDriver driver){
+        this.driver = driver;
+        PageFactory.initElements(driver,this);
+    }
+    @FindBy(xpath = "//*[contains(@class,'loader')]//*[contains(text(),'Please wait')]")
+    public WebElement pleaseWait;
+
+    @FindBy(xpath = "//*[@role='tablist']//*[contains(text(),'My Investors')]")
+    private WebElement myInvestors;
+
+    @FindBy(xpath = "//*[@role='tablist']//*[contains(text(),'Reports')]")
+    private WebElement reportsSideNavBar;
+
+    @FindBy(xpath = "//*[@role='tablist']//*[contains(text(),'Instant')]")
+    private WebElement instantReports;
+
+
+
+    public void clickOnInstantReport()
+    {
+        waitTillElementToBeVisible(this.reportsSideNavBar);
+        waitTillElementToBeClicable(this.reportsSideNavBar);
+        this.reportsSideNavBar.click();
+
+        waitTillElementToBeVisible(this.instantReports);
+        waitTillElementToBeClicable(this.instantReports);
+        this.instantReports.click();
+    }
+
+    public void clickOnMyInvestor()
+    {
+        waitTillInvisiblityOfPleaseWait();
+       waitTillElementToBeVisible(this.myInvestors);
+       waitTillElementToBeClicable(this.myInvestors);
+        this.myInvestors.click();
+    }
+
+    private void waitTillInvisiblityOfPleaseWait()
+    {
+        new WebDriverWait(driver,30).until(ExpectedConditions.invisibilityOf(this.pleaseWait));
+    }
+
+    private void waitTillElementToBeClicable(WebElement webElement)
+    {
+        new WebDriverWait(driver,30).until(ExpectedConditions.elementToBeClickable(webElement));
+    }
+
+    private void waitTillElementToBeVisible(WebElement webElement)
+    {
+        new WebDriverWait(driver,30).until(ExpectedConditions.visibilityOf(webElement));
+    }
+}
